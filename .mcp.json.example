@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "ekaya": {
+      "type": "http",
+      "url": "The URL from Ekaya Setup"
+    }
+  }
+}

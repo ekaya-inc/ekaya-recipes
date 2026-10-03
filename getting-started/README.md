@@ -23,5 +23,7 @@ In Claude Code, you copy the command from Setup and run it in your terminal. The
 Once your agent is connected, paste this into it:
 
 ```text
-Use Ekaya to help me set up this project. Check where the project stands, ask me what I want to achieve, and walk me through each next step.
+Use Ekaya to help me set up this project.
+Check where the project stands, ask me what I want to achieve,
+and walk me through each next step.
 ```

@@ -41,7 +41,10 @@ README.md                     what Recipes are, and the list of them
   hyphens (`getting-started`).
 - The slug names the recipe's published files and its page in the Ekaya app. Do not rename or move a recipe
   directory unless those change at the same time.
-- A new recipe gets a row in the list in the root `README.md`.
+- A new recipe gets a row in the list in the root `README.md`. The list has no status column: a recipe is
+  listed once it is published.
+- A recipe's prompt, if it has one, is in its `README.md` and in the Ekaya app's recipe page, below the video.
+  Break its lines at natural points (about 70 characters) so a code block on GitHub does not scroll sideways.
 - `.assets/` holds the source of a recipe's video: screenshots, script, and generation parameters. None of
   it is secret, and none of it is for the reader, so it stays out of the recipe's page.
 

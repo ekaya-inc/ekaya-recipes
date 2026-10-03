@@ -4,9 +4,9 @@ A Recipe is an end-to-end walkthrough of a real business use case with Ekaya. Ea
 
 ## Recipes
 
-| Recipe | What it covers | Status |
-| --- | --- | --- |
-| [Getting Started](getting-started/) | Creating a project and setting up Ekaya | Coming soon |
+| Recipe | What it covers |
+| --- | --- |
+| [Getting Started](getting-started/) | Creating a project and setting up Ekaya |
 
 ## Using a Recipe
 

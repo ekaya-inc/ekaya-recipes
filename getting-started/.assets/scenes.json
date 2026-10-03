@@ -1,0 +1,112 @@
+{
+  "slug": "getting-started",
+  "video": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "lead": 0.5,
+    "tail": 0.7,
+    "crossfade": 0.35,
+    "title_seconds": 3.0,
+    "end_seconds": 3.0
+  },
+  "voice": {
+    "provider": "elevenlabs",
+    "voice_name": "Justin Time - Elearning Narration",
+    "voice_id": "uFIXVu9mmnDZ7dTKCBTX",
+    "model_id": "eleven_multilingual_v2",
+    "seed": 42,
+    "voice_settings": {
+      "stability": 0.6,
+      "similarity_boost": 0.75,
+      "style": 0,
+      "use_speaker_boost": true
+    }
+  },
+  "pronounce": {
+    "/mcp": "slash M C P",
+    "MCP": "M C P"
+  },
+  "title_card": {
+    "kicker": "Ekaya Recipes",
+    "title": "Getting Started",
+    "subtitle": "Create your first project and connect your AI agent"
+  },
+  "end_card": {
+    "kicker": "Ekaya Recipes",
+    "title": "Choose your next Recipe",
+    "subtitle": "You will find them on your Projects page"
+  },
+  "scenes": [
+    {
+      "id": "s01-sign-in",
+      "narration": "Welcome to Ekaya. In this video, you'll create your first project and connect it to your AI agent.",
+      "shots": [
+        {"image": "000--sign-up.png", "focus": [416, 60, 448, 550], "zoom": 1.2}
+      ]
+    },
+    {
+      "id": "s02-projects",
+      "narration": "Once you're in, you land on your Projects page. A project is where your data, your applications, and your users come together. Each project is separate from every other project, with its own billing. To start, select Create Project.",
+      "shots": [
+        {"image": "010--no-projects.png", "focus": [0, 60, 900, 420], "zoom": 1.0},
+        {"at": "To start, select", "image": "010--no-projects.png", "focus": [1098, 97, 150, 35], "zoom": 1.6, "highlight": true, "cursor": {"from": [760, 330], "to": [1173, 115]}}
+      ]
+    },
+    {
+      "id": "s03-hosting",
+      "narration": "First, choose where your project is hosted. In Ekaya Cloud, Ekaya hosts everything for you. Local on Premise keeps your project on your own infrastructure. For this walkthrough, choose Ekaya Cloud.",
+      "shots": [
+        {"image": "020--create-project-hosting.png", "focus": [288, 120, 704, 260], "zoom": 1.3},
+        {"at": "For this walkthrough", "image": "020--create-project-hosting.png", "focus": [314, 202, 320, 165], "zoom": 1.45, "highlight": true, "cursor": {"from": [860, 440], "to": [474, 290]}}
+      ]
+    },
+    {
+      "id": "s04-name-region",
+      "narration": "Give your project a name. Then select Create project.",
+      "shots": [
+        {"image": "030--create-project-form.png", "focus": [314, 266, 653, 35], "zoom": 1.45, "highlight": true},
+        {"at": "Then select Create project", "image": "030--create-project-form.png", "focus": [865, 118, 127, 36], "zoom": 1.3, "highlight": true, "cursor": {"from": [640, 400], "to": [928, 136]}}
+      ]
+    },
+    {
+      "id": "s05-permissions",
+      "narration": "Ekaya creates your project and opens Setup. The first step is to connect your agent. Leave Full permissions turned on. It allows your administrator agent to set up your project for you.",
+      "shots": [
+        {"image": "040--setup-claude-code.png", "focus": [425, 40, 800, 330], "zoom": 1.5},
+        {"at": "Leave Full permissions", "image": "040--setup-claude-code.png", "focus": [425, 300, 790, 65], "zoom": 1.5, "highlight": true, "frame": [425, 300, 800, 65]}
+      ]
+    },
+    {
+      "id": "s06-agents",
+      "narration": "Next, choose the agent you use. Ekaya works with Claude Code, Claude Desktop, Claude Chat, Claude Cowork, Codex, VS Code, and any other client that supports MCP servers.",
+      "shots": [
+        {"image": "040--setup-claude-code.png", "focus": [430, 479, 780, 32], "zoom": 1.5, "highlight": true, "frame": [425, 479, 800, 32]},
+        {"at": "Claude Code,", "image": "040--setup-claude-code.png", "focus": [430, 479, 106, 32], "zoom": 1.5, "highlight": true, "frame": [425, 479, 800, 32]},
+        {"at": "Claude Desktop,", "image": "050--setup-claude-desktop.png", "focus": [540, 232, 124, 32], "zoom": 1.0, "highlight": true},
+        {"at": "Claude Chat,", "image": "060--setup-claude-chat.png", "focus": [667, 232, 102, 32], "zoom": 1.0, "highlight": true},
+        {"at": "Claude Cowork,", "image": "070--setup-claude-cowork.png", "focus": [773, 232, 120, 32], "zoom": 1.0, "highlight": true},
+        {"at": "Codex,", "image": "080--setup-codex.png", "focus": [897, 265, 101, 32], "zoom": 1.0, "highlight": true},
+        {"at": "VS Code,", "image": "090--setup-vscode.png", "focus": [1002, 120, 101, 32], "zoom": 1.0, "highlight": true},
+        {"at": "and any other client", "image": "100--setup-other-clients.png", "focus": [1107, 262, 103, 32], "zoom": 1.0, "highlight": true}
+      ]
+    },
+    {
+      "id": "s07-connect",
+      "narration": "Each agent has its own short instructions on this screen, so follow them to connect. In Claude Code, for example, you copy this command and run it in your terminal. Then start Claude Code, run /mcp, select ekaya, and sign in through your browser.",
+      "shots": [
+        {"image": "040--setup-claude-code.png", "focus": [425, 555, 800, 72], "zoom": 1.5},
+        {"at": "you copy this command", "image": "040--setup-claude-code.png", "focus": [1175, 562, 32, 32], "zoom": 1.5, "highlight": true, "cursor": {"from": [900, 470], "to": [1191, 578]}, "frame": [425, 555, 800, 72]},
+        {"at": "Then start Claude Code", "image": "041--setup-claude-code-steps.png", "focus": [425, 488, 560, 52], "zoom": 1.5, "highlight": true, "frame": [425, 488, 800, 52]}
+      ]
+    },
+    {
+      "id": "s08-next",
+      "narration": "Once your agent is connected, you're ready to go. Ask it to help you set up Ekaya, and it will guide you through the next steps. To learn more, try another Recipe from your Projects page.",
+      "shots": [
+        {"image": "040--setup-claude-code.png", "focus": [288, 40, 700, 330], "zoom": 1.0},
+        {"at": "To learn more", "image": "010--no-projects.png", "focus": [32, 622, 1170, 82], "zoom": 1.0, "highlight": true, "caption": "top"}
+      ]
+    }
+  ]
+}

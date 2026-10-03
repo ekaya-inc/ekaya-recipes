@@ -11,11 +11,12 @@ real business use case. It gives the user two things:
 - a **video walkthrough** to watch, and
 - a **pastable prompt** that sets up Ekaya for that use case.
 
-The Ekaya app lists Recipes on its Projects page. A card's "View recipe" button opens
-`https://github.com/ekaya-inc/ekaya-recipes/tree/main/<slug>`, so the recipe's `README.md`, as GitHub
-renders it, is the page the user lands on.
+The Ekaya app lists Recipes on its Projects page. A card's "View recipe" button opens a page in the app
+that plays the recipe's video, which is published to the CDN (see Videos). This repository holds each
+recipe's source and a `README.md` for anyone who finds it on GitHub.
 
-The repository holds content only: there is no code, build, or test suite.
+The repository holds content and the script that renders each recipe's video. It has no application code,
+build, or test suite.
 
 ## Audience
 
@@ -27,26 +28,46 @@ non-technical and quick to follow: the video shows what to do, and the prompt do
 ```
 README.md                     what Recipes are, and the list of them
 <slug>/README.md              one recipe: its video walkthrough and its prompt
+<slug>/<slug>.mp4              the rendered video (ignored by git, never committed)
 <slug>/.assets/               what the recipe's video is made from
+<slug>/.assets/scenes.json    narration text, voice, and the shot list: the source of the video
+<slug>/.assets/generate.py    renders the video from the assets in this folder
 <slug>/.assets/screenshots/   the UI screenshots, in the order the video uses them
+<slug>/.assets/audio/         one narration clip per scene, and which text each was made from
+<slug>/.assets/poster.jpg     the image the recipe's README shows in place of the video
 ```
 
 - Each recipe is one directory at the repository root, named by its slug: lowercase words joined by
   hyphens (`getting-started`).
-- The slug is part of a public URL that the Ekaya app links to. Do not rename or move a recipe directory
-  unless the app's link changes at the same time.
+- The slug names the recipe's published files and its page in the Ekaya app. Do not rename or move a recipe
+  directory unless those change at the same time.
 - A new recipe gets a row in the list in the root `README.md`.
 - `.assets/` holds the source of a recipe's video: screenshots, script, and generation parameters. None of
   it is secret, and none of it is for the reader, so it stays out of the recipe's page.
 
 ## Videos
 
-- A recipe's video is rendered outside this repository and hosted at
-  `https://cdn.ekaya.ai/recipes/<slug>.mp4`. Never commit a rendered video: `*.mp4` is ignored.
+- A recipe's video is rendered here (`./generate.py render`) but never committed: `*.mp4` is ignored. It is
+  hosted on the CDN at `https://cdn.ekaya.ai/recipes/<slug>.mp4` (720p, for embedding), with
+  `<slug>-1080p.mp4` for full resolution and `<slug>.jpg` as the poster. Publishing to the CDN is a
+  decision for the maintainer, made from the sibling `ekaya-marketing` repository, not from here.
 - GitHub does not play a video hosted elsewhere, so the recipe's `README.md` shows a poster image that
   links to the video's URL.
 - Narration is the ElevenLabs voice "Justin Time - Elearning Narration" (`uFIXVu9mmnDZ7dTKCBTX`) on the
-  `eleven_multilingual_v2` model. Write "Ekaya" as spelled in a script: no pronunciation rule is applied.
+  `eleven_multilingual_v2` model, with the settings in `scenes.json`. Write "Ekaya" as spelled in a script:
+  no pronunciation rule is applied. Spell out anything the voice would misread in `scenes.json` →
+  `pronounce` (for example `MCP` is read as "M C P"), not in the narration text.
+- Regenerate a recipe's video with `./generate.py render` in its `.assets/` folder (needs Python with
+  Pillow, and ffmpeg). It never calls a voice service: it uses the clips in `audio/`, so a render is
+  repeatable and does not change narration nobody edited. `./generate.py render --preview` is a quick
+  half-resolution render for checking timing and framing.
+- After editing a scene's `narration`, run `./generate.py status`. It lists the scenes whose clip no longer
+  matches the text. For each, generate the narration with the voice in `scenes.json`, save it as
+  `audio/<scene id>.mp3`, run `./generate.py stamp <scene id>`, then render. ElevenLabs output is not
+  repeatable, so regenerate only the scenes that changed.
+- Shots in `scenes.json` use `at` (a phrase from the narration) to say when a shot begins, and
+  coordinates in CSS pixels of the 1280×720 capture viewport for `focus`, `cursor`, and `frame`. After
+  changing a screenshot, check those coordinates against it.
 - Capture screenshots from a 1280×720 browser viewport at device pixel ratio 3, which gives a 3840×2160
   PNG. In Chrome DevTools, add a custom Desktop device of that size to the device toolbar and use "Capture
   screenshot". That size is 16:9, keeps UI text readable in a 1080p video, and stays sharp when the video

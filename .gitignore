@@ -1,4 +1,5 @@
 .codex/
 .mcp.json
 CLAUDE.local.md
+__pycache__/
 *.mp4

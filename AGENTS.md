@@ -15,13 +15,18 @@ The Ekaya app lists Recipes on its Projects page. A card's "View recipe" button 
 that plays the recipe's video, which is published to the CDN (see Videos). This repository holds each
 recipe's source and a `README.md` for anyone who finds it on GitHub.
 
-The repository holds content and the script that renders each recipe's video. It has no application code,
-build, or test suite.
+The repository holds content, the scripts that render the recipes' videos, and any file a recipe gives its
+reader (the `create-video` recipe's video generator). It has no build or test suite.
 
 ## Audience
 
 The reader of a recipe is a business user setting up Ekaya, not a developer. A recipe must be
 non-technical and quick to follow: the video shows what to do, and the prompt does the setup.
+
+When the reader's agent needs exact steps, they go last in the recipe's `README.md`, under "For your
+agent", and are written to the agent. The prompt gives the recipe's URL, so the agent reads them there.
+Anything that needs the reader's consent (installing software, for example) is also said in the prompt
+itself: the prompt is the reader's instruction, and the page is only what the agent reads.
 
 ## Layout
 
@@ -35,12 +40,18 @@ README.md                     what Recipes are, and the list of them
 <slug>/.assets/screenshots/   the UI screenshots, in the order the video uses them
 <slug>/.assets/audio/         one narration clip per scene, and which text each was made from
 <slug>/.assets/poster.jpg     the image the recipe's README shows in place of the video
+<category>/<slug>/            a recipe can also sit in a category folder: media/create-video/
+media/create-video/generate.py   the video generator that recipe gives its reader
 ```
 
-- Each recipe is one directory at the repository root, named by its slug: lowercase words joined by
-  hyphens (`getting-started`).
-- The slug names the recipe's published files and its page in the Ekaya app. Do not rename or move a recipe
-  directory unless those change at the same time.
+- Each recipe is one directory named by its slug: lowercase words joined by hyphens (`getting-started`).
+  It sits at the repository root or one level down, in a category folder (`media/create-video`).
+- The slug names the recipe's published files and its page in the Ekaya app, without the category, so a
+  slug is unique across the repository. A recipe's prompt can hold its GitHub URL. Do not rename or move a
+  recipe directory unless all of those change at the same time.
+- `media/create-video/generate.py` is downloaded from the `main` branch and run by readers' agents. Keep it
+  one file that needs only Python 3.9, Pillow, and ffmpeg, and keep its commands and the fields of
+  `scenes.json` working for the scripts readers already have.
 - A new recipe gets a row in the list in the root `README.md`. The list has no status column: a recipe is
   listed once it is published.
 - A recipe's prompt, if it has one, is in its `README.md` and in the Ekaya app's recipe page, below the video.
@@ -64,6 +75,10 @@ README.md                     what Recipes are, and the list of them
   Pillow, and ffmpeg). It never calls a voice service: it uses the clips in `audio/`, so a render is
   repeatable and does not change narration nobody edited. `./generate.py render --preview` is a quick
   half-resolution render for checking timing and framing.
+- The `create-video` recipe has no `generate.py` in `.assets/`. Its video is made by the generator the
+  recipe gives its readers, so run `../generate.py` from `media/create-video/.assets/`: `render` for the
+  720p video, `render --height 1080` for full resolution, and `poster`. It has no screenshots: its scenes
+  are drawn from the text in `scenes.json`.
 - After editing a scene's `narration`, run `./generate.py status`. It lists the scenes whose clip no longer
   matches the text. For each, generate the narration with the voice in `scenes.json`, save it as
   `audio/<scene id>.mp3`, run `./generate.py stamp <scene id>`, then render. ElevenLabs output is not

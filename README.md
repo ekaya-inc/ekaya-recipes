@@ -7,6 +7,7 @@ A Recipe is an end-to-end walkthrough of a real business use case with Ekaya. Ea
 | Recipe | What it covers |
 | --- | --- |
 | [Getting Started](getting-started/) | Creating a project and setting up Ekaya |
+| [Create an explainer video](media/create-video/) | Making a narrated video from an idea, with your agent and ElevenLabs |
 
 ## Using a Recipe
 

@@ -1,0 +1,98 @@
+{
+  "slug": "create-video",
+  "output_dir": "..",
+  "video": {
+    "width": 1920,
+    "height": 1080,
+    "default_height": 720,
+    "fps": 30,
+    "lead": 0.5,
+    "tail": 0.7,
+    "crossfade": 0.35,
+    "captions": true
+  },
+  "brand": {
+    "kicker": "Ekaya Recipes",
+    "footer": "Create an explainer video"
+  },
+  "voice": {
+    "provider": "elevenlabs",
+    "voice_name": "Justin Time - Elearning Narration",
+    "voice_id": "uFIXVu9mmnDZ7dTKCBTX",
+    "model_id": "eleven_multilingual_v2",
+    "seed": 42,
+    "voice_settings": {
+      "stability": 0.6,
+      "similarity_boost": 0.75,
+      "style": 0,
+      "use_speaker_boost": true
+    }
+  },
+  "pronounce": {},
+  "title_card": {
+    "title": "Create an explainer video",
+    "subtitle": "From an idea to a narrated video, with your AI agent",
+    "seconds": 3
+  },
+  "end_card": {
+    "title": "Paste the prompt to begin",
+    "subtitle": "You will find it on this Recipe's page",
+    "seconds": 3
+  },
+  "scenes": [
+    {
+      "id": "s01-prompt",
+      "title": "Start with one prompt.",
+      "points": [
+        {"text": "Copy the prompt from this Recipe", "at": "Copy the prompt"},
+        {"text": "Paste it into Claude Code", "at": "paste it into"},
+        {"text": "Say what your video should explain", "at": "and tell it"}
+      ],
+      "note": "This video was made this way.",
+      "narration": "In this Recipe, you'll turn an idea into a narrated explainer video, like this one. Copy the prompt from this Recipe's page, paste it into Claude Code, and tell it what your video should explain."
+    },
+    {
+      "id": "s02-voice",
+      "title": "Connect a voice.",
+      "points": [
+        {"text": "Claude adds ElevenLabs to your project", "at": "Claude adds ElevenLabs"},
+        {"text": "You enter your API key on Ekaya's page", "at": "Open it and enter"},
+        {"text": "Claude approves only what the video needs", "at": "Then Claude approves"}
+      ],
+      "note": "Your key never passes through the conversation.",
+      "narration": "The voice comes from ElevenLabs. Claude adds ElevenLabs to your Ekaya project and gives you a link. Open it and enter your ElevenLabs API key there, so the key never passes through your conversation. Then Claude approves only the requests your video needs, like turning text into speech."
+    },
+    {
+      "id": "s03-script",
+      "title": "Review the script.",
+      "points": [
+        {"text": "A title and a handful of scenes", "at": "a title,"},
+        {"text": "What each scene shows and says", "at": "each with a headline"},
+        {"text": "A voice you choose", "at": "and choose a voice"}
+      ],
+      "note": "Nothing is narrated until you are happy with the script.",
+      "narration": "Next, Claude writes the script: a title, and a handful of scenes, each with a headline, a few points, and the words the narrator will say. Read it, ask for changes, and choose a voice. Nothing is narrated until you're happy with the script."
+    },
+    {
+      "id": "s04-render",
+      "title": "Claude makes the video.",
+      "points": [
+        {"text": "Ekaya asks ElevenLabs to narrate each scene", "at": "Through Ekaya"},
+        {"text": "A generator builds the video on your computer", "at": "A small generator"},
+        {"text": "Claude asks before it installs anything", "at": "If your computer"}
+      ],
+      "note": "You get a video file that is yours to share.",
+      "narration": "Then Claude makes the video. Through Ekaya, it asks ElevenLabs to narrate each scene. A small generator from the Ekaya Recipes repository puts the scenes and the narration together on your computer. If your computer is missing something the generator needs, Claude asks before it installs anything."
+    },
+    {
+      "id": "s05-change",
+      "title": "Change anything.",
+      "points": [
+        {"text": "Ask for a change in plain words", "at": "Just ask"},
+        {"text": "Only the scenes you change are narrated again", "at": "and only the scenes"},
+        {"text": "Wording, colors, and voice are yours to change", "at": "You can change"}
+      ],
+      "narration": "Want to change something? Just ask. Claude edits the script, and only the scenes you changed are narrated again, so the rest of your video stays exactly as it was. You can change the wording, the colors, even the voice."
+    }
+  ]
+}

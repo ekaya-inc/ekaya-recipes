@@ -1,0 +1,114 @@
+{
+  "slug": "connect-bigquery",
+  "video": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "lead": 0.5,
+    "tail": 0.7,
+    "crossfade": 0.35,
+    "title_seconds": 3.0,
+    "end_seconds": 3.0
+  },
+  "voice": {
+    "provider": "elevenlabs",
+    "voice_name": "Justin Time - Elearning Narration",
+    "voice_id": "uFIXVu9mmnDZ7dTKCBTX",
+    "model_id": "eleven_multilingual_v2",
+    "seed": 42,
+    "voice_settings": {
+      "stability": 0.6,
+      "similarity_boost": 0.75,
+      "style": 0,
+      "use_speaker_boost": true
+    }
+  },
+  "pronounce": {
+    "JSON": "Jason"
+  },
+  "title_card": {
+    "kicker": "Ekaya Recipes",
+    "title": "Connect BigQuery",
+    "subtitle": "Connect your data warehouse, describe it, and ask it questions"
+  },
+  "end_card": {
+    "kicker": "Ekaya Recipes",
+    "title": "Ask your data a question",
+    "subtitle": "Your agent answers from your own BigQuery"
+  },
+  "scenes": [
+    {
+      "id": "s01-intro",
+      "narration": "In this Recipe, you'll connect Google BigQuery to Ekaya. You give Ekaya a read-only key, your agent describes your data, and then you can ask it questions in plain words.",
+      "shots": [
+        {"image": "000--dashboard.png", "focus": [64, 0, 1152, 720], "zoom": 1.0},
+        {"at": "You give Ekaya", "image": "000--dashboard.png", "focus": [64, 93, 368, 140], "frame": [64, 40, 760, 420], "zoom": 1.4, "highlight": true},
+        {"at": "your agent describes", "image": "000--dashboard.png", "focus": [64, 533, 368, 140], "frame": [64, 420, 760, 300], "zoom": 1.4, "highlight": true}
+      ]
+    },
+    {
+      "id": "s02-key",
+      "narration": "First, create a key in Google Cloud. Make a service account with two roles, BigQuery Data Viewer and BigQuery Job User, and download its JSON key. Then paste this Recipe's prompt into your agent. It adds BigQuery to your project and gives you a link to this Setup page.",
+      "shots": [
+        {"image": "010--credentials-form.png", "focus": [450, 395, 740, 170], "frame": [425, 140, 790, 440], "zoom": 1.55},
+        {"at": "Then paste this Recipe's prompt", "image": "010--credentials-form.png", "focus": [425, 55, 250, 45], "frame": [425, 40, 790, 440], "zoom": 1.55, "highlight": true}
+      ]
+    },
+    {
+      "id": "s03-paste",
+      "narration": "Open the link, and paste the whole key file into the first box. Ekaya reads the Project ID from the key for you. Then add the dataset you want to use, so Ekaya reads only those tables.",
+      "shots": [
+        {"image": "020--credentials-key-pasted.png", "focus": [450, 395, 740, 170], "frame": [425, 300, 790, 300], "zoom": 1.55, "highlight": true},
+        {"at": "Ekaya reads the Project ID", "image": "030--credentials-fields.png", "focus": [450, 185, 740, 90], "frame": [425, 150, 790, 300], "zoom": 1.55, "highlight": true},
+        {"at": "Then add the dataset", "image": "030--credentials-fields.png", "focus": [450, 310, 740, 90], "frame": [425, 150, 790, 300], "zoom": 1.55, "highlight": true}
+      ]
+    },
+    {
+      "id": "s04-test",
+      "narration": "Next, test the connection. Ekaya checks the key and confirms that it can only read your data. Save it, and BigQuery is connected.",
+      "shots": [
+        {"image": "040--credentials-tested.png", "focus": [450, 368, 160, 40], "frame": [425, 320, 790, 330], "zoom": 1.55, "highlight": true, "cursor": {"from": [820, 230], "to": [530, 388]}},
+        {"at": "confirms that it", "image": "040--credentials-tested.png", "focus": [450, 432, 740, 105], "frame": [425, 320, 790, 330], "zoom": 1.55, "highlight": true},
+        {"at": "Save it", "image": "040--credentials-tested.png", "focus": [1062, 615, 153, 40], "frame": [425, 400, 790, 260], "zoom": 1.55, "highlight": true, "cursor": {"from": [820, 470], "to": [1138, 635]}}
+      ]
+    },
+    {
+      "id": "s05-schema",
+      "narration": "Ekaya reads your dataset and selects its tables for you. Columns that look like personal data, such as names, email addresses and street addresses, are marked, and Setup asks you to confirm them before they are used.",
+      "shots": [
+        {"image": "050--schema.png", "focus": [89, 265, 1100, 440], "zoom": 1.15},
+        {"at": "Columns that look like", "image": "060--schema-users.png", "focus": [90, 15, 1100, 690], "zoom": 1.0},
+        {"at": "such as names", "image": "060--schema-users.png", "focus": [862, 110, 100, 310], "frame": [90, 40, 1100, 420], "zoom": 1.35, "highlight": true}
+      ]
+    },
+    {
+      "id": "s06-ontology",
+      "narration": "Then your agent describes your data. This is called ontology extraction. Ekaya measures every table and column, and your agent works through what it finds. It classifies each column, labels the values a status can take, works out how the tables join, and describes each one in business terms.",
+      "shots": [
+        {"image": "070--ontology-extraction.png", "focus": [16, 0, 1248, 720], "zoom": 1.0},
+        {"at": "It classifies", "image": "070--ontology-extraction.png", "focus": [41, 305, 1198, 42], "frame": [0, 260, 1164, 420], "zoom": 1.1, "highlight": true},
+        {"at": "labels the values", "image": "070--ontology-extraction.png", "focus": [41, 350, 1198, 42], "frame": [0, 260, 1164, 420], "zoom": 1.1, "highlight": true},
+        {"at": "works out how the tables join", "image": "070--ontology-extraction.png", "focus": [41, 395, 1198, 87], "frame": [0, 260, 1164, 420], "zoom": 1.1, "highlight": true},
+        {"at": "describes each one", "image": "070--ontology-extraction.png", "focus": [41, 485, 1198, 87], "frame": [0, 260, 1164, 420], "zoom": 1.1, "highlight": true}
+      ]
+    },
+    {
+      "id": "s07-why",
+      "narration": "Why does this matter? A column named status, or a table named users, doesn't tell an agent what your business means by it. The ontology does. Every agent you connect starts from the same description, so it knows how your tables join, which values to group by, and that prices are in dollars, not cents. It doesn't have to guess.",
+      "shots": [
+        {"image": "080--relationships.png", "focus": [64, 97, 1152, 148], "frame": [46, 40, 1188, 640], "zoom": 1.1},
+        {"at": "so it knows how your tables join", "image": "090--relationships-order-items.png", "focus": [90, 28, 1100, 390], "frame": [64, 20, 1152, 560], "zoom": 1.1, "highlight": true},
+        {"at": "that prices are in dollars", "image": "100--project-knowledge.png", "focus": [90, 372, 1100, 125], "frame": [64, 300, 1152, 360], "zoom": 1.15, "highlight": true}
+      ]
+    },
+    {
+      "id": "s08-ask",
+      "narration": "Now ask your agent questions in plain words, like how many orders are in each status. It answers from your own data. When you find a question you'll ask again, your agent can save it as a Request, and Setup is complete.",
+      "shots": [
+        {"image": "120--request-results.png", "focus": [819, 450, 345, 220], "frame": [795, 230, 420, 450], "zoom": 1.5, "highlight": true},
+        {"at": "your agent can save it", "image": "110--saved-request.png", "focus": [435, 321, 300, 72], "frame": [0, 230, 853, 480], "zoom": 1.5, "highlight": true},
+        {"at": "and Setup is complete", "image": "110--saved-request.png", "focus": [82, 551, 278, 65], "frame": [0, 230, 853, 480], "zoom": 1.5, "highlight": true}
+      ]
+    }
+  ]
+}

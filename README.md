@@ -9,6 +9,8 @@ A Recipe is an end-to-end walkthrough of a real business use case with Ekaya. Ea
 | [Getting Started](getting-started/) | Creating a project and setting up Ekaya |
 | [Connect BigQuery](datasources/connect-bigquery/) | Connecting Google BigQuery, describing your data, and asking it questions |
 | [Create an explainer video](media/create-video/) | Making a narrated video from an idea, with your agent and ElevenLabs |
+| [Google Drive Manager (1 of 2): Viewing and Changing Permissions](applications/google-drive-manager-permissions/) | Seeing who has access to your Google Drive, and giving or removing that access from one page |
+| [Google Drive Manager (2 of 2): Viewing the Access Log](applications/google-drive-manager-access-log/) | Seeing who other than you opened which files, from your Google Workspace audit log |
 
 ## Using a Recipe
 

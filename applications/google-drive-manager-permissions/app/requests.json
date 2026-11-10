@@ -1,0 +1,118 @@
+{
+  "datasource": {
+    "provider": "composio_googledrive",
+    "name": "Google Drive",
+    "credential_mode": "per_user"
+  },
+  "selected_tools": [
+    {"slug": "GOOGLEDRIVE_CREATE_PERMISSION", "version": "from search_connector_tools"},
+    {"slug": "GOOGLEDRIVE_DELETE_PERMISSION", "version": "from search_connector_tools"}
+  ],
+  "requests": [
+    {
+      "placeholder": "REPLACE_SCAN",
+      "name": "Scan Drive files with permissions",
+      "operation": "GOOGLEDRIVE_FIND_FILE",
+      "effect": "READ",
+      "description": "One page of the signed-in person's non-trashed Google Drive files across My Drive and every shared drive, each with its owners and, where Drive returns them, its permissions (person, email, role). Pass pageToken from the previous page's nextPageToken to continue. Read-only.",
+      "parameters": [
+        {"name": "q", "type": "string", "required": false, "default": "trashed = false", "description": "Drive search query; defaults to every non-trashed file."},
+        {"name": "corpora", "type": "string", "required": false, "default": "allDrives", "description": "Where to search; allDrives covers My Drive and all shared drives."},
+        {"name": "includeItemsFromAllDrives", "type": "boolean", "required": false, "default": true, "description": "Include shared-drive items."},
+        {"name": "supportsAllDrives", "type": "boolean", "required": false, "default": true, "description": "The caller supports shared drives."},
+        {"name": "pageSize", "type": "integer", "required": false, "default": 200, "description": "Files per page."},
+        {"name": "pageToken", "type": "string", "required": false, "description": "The exact nextPageToken from the previous page; omit for the first page."},
+        {"name": "fields", "type": "string", "required": false, "default": "nextPageToken,incompleteSearch,files(id,name,mimeType,webViewLink,modifiedTime,ownedByMe,shared,driveId,owners(displayName,emailAddress,me),permissions(id,type,role,emailAddress,displayName,domain,deleted,pendingOwner,expirationTime))", "description": "Partial-response field mask; keep the default."}
+      ]
+    },
+    {
+      "placeholder": "REPLACE_PERMISSIONS",
+      "name": "List one Drive file's permissions",
+      "operation": "GOOGLEDRIVE_LIST_PERMISSIONS",
+      "effect": "READ",
+      "description": "Every permission on one Google Drive file, folder or shared drive: person or group, email, role, and whether it is inherited from a shared drive or folder. Used for shared-drive files, which the bulk scan returns without permissions. Read-only.",
+      "parameters": [
+        {"name": "fileId", "type": "string", "required": true, "description": "The Drive file, folder or shared drive id."},
+        {"name": "supportsAllDrives", "type": "boolean", "required": false, "default": true, "description": "The file may be in a shared drive; keep true."},
+        {"name": "pageSize", "type": "integer", "required": false, "default": 100, "description": "Permissions per page."},
+        {"name": "pageToken", "type": "string", "required": false, "description": "The exact nextPageToken from the previous page; omit for the first page."},
+        {"name": "fields", "type": "string", "required": false, "default": "nextPageToken,permissions(id,type,role,emailAddress,displayName,domain,deleted,pendingOwner,expirationTime,permissionDetails)", "description": "Partial-response field mask; keep the default."}
+      ]
+    },
+    {
+      "placeholder": "REPLACE_WHO",
+      "name": "Who is signed in to Drive",
+      "operation": "GOOGLEDRIVE_GET_ABOUT",
+      "effect": "READ",
+      "description": "The display name, email address and permission id of the person signed in to Google Drive, so the app can leave their own account out of the people it lists. Read-only.",
+      "parameters": [
+        {"name": "fields", "type": "string", "required": false, "default": "user(displayName,emailAddress,permissionId,me)", "description": "Partial-response field mask; keep the default."}
+      ]
+    },
+    {
+      "placeholder": "REPLACE_DRIVES",
+      "name": "List Drive shared drives",
+      "operation": "GOOGLEDRIVE_LIST_SHARED_DRIVES",
+      "effect": "READ",
+      "description": "The names and ids of the shared drives the signed-in person can see, so the app can show which shared drive each file lives in. Read-only.",
+      "parameters": [
+        {"name": "pageSize", "type": "integer", "required": false, "default": 100, "description": "Shared drives per page."},
+        {"name": "pageToken", "type": "string", "required": false, "description": "The exact nextPageToken from the previous page; omit for the first page."},
+        {"name": "fields", "type": "string", "required": false, "default": "nextPageToken,drives(id,name)", "description": "Partial-response field mask; keep the default."}
+      ]
+    },
+    {
+      "placeholder": "REPLACE_FILE_INFO",
+      "name": "Get one Drive file's name and link",
+      "operation": "GOOGLEDRIVE_GET_FILE_METADATA",
+      "effect": "READ",
+      "description": "The name, link, type, shared-drive id and whether the signed-in person can share it, for one Google Drive file or folder by id. Used to show exactly which file a share request is about before anything is shared. Read-only.",
+      "parameters": [
+        {"name": "fileId", "type": "string", "required": true, "description": "The Drive file or folder id."},
+        {"name": "supportsAllDrives", "type": "boolean", "required": false, "default": true, "description": "The file may be in a shared drive; keep true."},
+        {"name": "fields", "type": "string", "required": false, "default": "id,name,mimeType,webViewLink,driveId,ownedByMe,trashed,capabilities(canShare)", "description": "Partial-response field mask; keep the default."}
+      ]
+    },
+    {
+      "placeholder": "REPLACE_DRIVE_INFO",
+      "name": "Get one shared drive's name",
+      "operation": "GOOGLEDRIVE_GET_DRIVE",
+      "effect": "READ",
+      "description": "The name and id of one Google shared drive, by its drive id. Used to show exactly which shared drive a share or removal request is about before anything changes. Read-only.",
+      "parameters": [
+        {"name": "drive_id", "type": "string", "required": true, "description": "The shared drive id."}
+      ]
+    },
+    {
+      "placeholder": "REPLACE_REMOVE",
+      "name": "Remove a person's access to a Drive file",
+      "operation": "GOOGLEDRIVE_DELETE_PERMISSION",
+      "effect": "DELETE",
+      "note": "A selected original tool: it becomes a pending Request after select_connector_tools. Revise it to these parameters before approving.",
+      "description": "Delete one permission from one Google Drive file, folder or shared drive, by file id (or shared drive id) and permission id (from the scan or the permissions list). The person loses the access that permission gave; access they hold another way, such as from a parent folder or shared drive, remains. An owner's permission cannot be removed. Google sends no notification. Changes who can open the file. Use it only after a person has confirmed the removal in the app.",
+      "parameters": [
+        {"name": "file_id", "type": "string", "required": true, "description": "The Drive file or folder id."},
+        {"name": "permission_id", "type": "string", "required": true, "description": "The permission id to delete, as returned by the scan or the file's permission list."},
+        {"name": "supportsAllDrives", "type": "boolean", "required": false, "default": true, "description": "The file may be in a shared drive; keep true."}
+      ]
+    },
+    {
+      "placeholder": "REPLACE_GRANT",
+      "name": "Give a person access to a Drive file",
+      "operation": "GOOGLEDRIVE_CREATE_PERMISSION",
+      "effect": "CREATE",
+      "note": "A selected original tool: it becomes a pending Request after select_connector_tools. Revise it to these parameters before approving. This drops the domain, link-sharing, ownership-transfer and domain-admin parameters.",
+      "description": "Share one Google Drive file, folder or shared drive with one person or Google Group by email address at a chosen access level. For a shared drive, file_id is the drive id and the person becomes a member of the whole drive. Use type user or group with an email_address, and role reader (view), commenter or writer (edit); do not use any other type or role. It has no domain, link-sharing or ownership-transfer parameters, but it does not itself reject type anyone, so the caller must not send it. Sends Google's usual notification email unless send_notification_email is false. Changes who can open the file. Use it only after a person has confirmed in the app's share request.",
+      "parameters": [
+        {"name": "file_id", "type": "string", "required": true, "description": "The Drive file, folder or shared drive id."},
+        {"name": "type", "type": "string", "required": true, "description": "Who is being given access: user for a person or group for a Google Group. Never anyone or domain."},
+        {"name": "email_address", "type": "string", "required": true, "description": "The email address of the person or group."},
+        {"name": "role", "type": "string", "required": true, "description": "Access level: reader (view), commenter or writer (edit). Never owner."},
+        {"name": "send_notification_email", "type": "boolean", "required": false, "description": "Whether Google emails the person that the file was shared with them. Defaults to true."},
+        {"name": "email_message", "type": "string", "required": false, "description": "Optional plain-text message for the notification email."},
+        {"name": "expiration_time", "type": "string", "required": false, "description": "Optional RFC 3339 time at which the access ends, at most a year ahead."},
+        {"name": "supports_all_drives", "type": "boolean", "required": false, "default": true, "description": "The file may be in a shared drive; keep true."}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,810 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Google Drive Manager</title>
+<link rel="stylesheet" href="theme.css">
+<style>
+/* Google Drive Manager layout only; tokens and components come from the shared Production theme. */
+.page { max-width: 920px; margin: 0 auto; }
+main { padding: 0 24px 48px; }
+[hidden] { display: none !important; }
+h2 { font-size: 1.2rem; margin: 0; }
+#banner { margin-bottom: 16px; }
+
+.btn.quiet { border-color: transparent; background: transparent; color: var(--muted); }
+.btn.quiet:hover { border-color: var(--line); color: var(--ink); }
+.btn.danger { color: var(--danger); }
+.btn.danger:hover { border-color: var(--danger); color: var(--danger); }
+.btn[aria-pressed="true"] { background: var(--accent-soft); border-color: var(--accent); color: var(--ink); font-weight: 700; }
+
+.scan-bar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.scan-bar .lede { flex-basis: 100%; margin: 0 0 4px; color: var(--muted); }
+#progress { margin: 12px 0 0; }
+progress { width: 100%; height: 8px; margin-top: 8px; accent-color: var(--accent); }
+
+#signin { margin-top: 16px; padding: 14px 16px; }
+#signin p { margin: 0 0 8px; }
+
+#results { margin-top: 24px; }
+.summary { padding: 14px 16px; }
+.summary dl.facts { margin: 0; grid-template-columns: max-content 1fr; }
+.caveats { margin: 10px 0 0; padding-left: 20px; color: var(--muted); font-size: 0.88rem; }
+.caveats li + li { margin-top: 2px; }
+
+.filters { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 20px 0 10px; }
+.filters .field { width: auto; }
+.filters #q { flex: 1 1 220px; min-width: 0; }
+.filters.top { margin: 0 0 16px; }
+.seg { display: inline-flex; gap: 4px; flex-wrap: wrap; }
+
+#removal { margin-bottom: 16px; padding: 12px 16px; }
+#removal p { margin: 0 0 6px; }
+#removal.err { border-color: var(--danger); }
+
+.people { list-style: none; margin: 0; padding: 0; }
+.person { border-top: 1px solid var(--line); }
+.person:first-child { border-top: 0; }
+.person details > summary { display: flex; gap: 8px 12px; align-items: baseline; flex-wrap: wrap; padding: 12px 16px; cursor: pointer; }
+.person details[open] > summary { background: var(--accent-soft); }
+.person .who { font-weight: 700; overflow-wrap: anywhere; }
+.person .mail { color: var(--muted); font-size: 0.88rem; overflow-wrap: anywhere; }
+.person .count { margin-left: auto; font-variant-numeric: tabular-nums; }
+.person .confirm { padding: 12px 16px; border-top: 1px solid var(--line); background: var(--paper); }
+.person .confirm p { margin: 0 0 8px; }
+.person .files { padding: 4px 16px 14px; overflow-x: auto; }
+.person .files td, .person .files th { vertical-align: top; }
+.person .files td a { overflow-wrap: anywhere; }
+.person .more { margin-top: 8px; }
+.meta { color: var(--muted); font-size: 0.88rem; }
+.empty-note, .status { padding: 16px; }
+[role="tablist"] { display: flex; gap: 4px; border-bottom: 1px solid var(--line); margin-bottom: 20px; }
+[role="tab"] { border: 0; border-bottom: 3px solid transparent; border-radius: 0; background: none; padding: 8px 14px; color: var(--muted); font-weight: 700; cursor: pointer; }
+[role="tab"][aria-selected="true"] { color: var(--ink); border-bottom-color: var(--accent); }
+#share-request { margin-bottom: 20px; }
+#share-request h2 { margin-bottom: 6px; }
+#share-request p { margin: 0 0 8px; }
+#share-request ul { list-style: none; margin: 10px 0; padding: 0; }
+#share-request li { padding: 8px 0; border-top: 1px solid var(--line); }
+#share-request li:first-child { border-top: 0; }
+#share-request .check { display: flex; gap: 8px; align-items: center; margin: 10px 0; }
+.log-controls { display: flex; gap: 8px 16px; align-items: center; flex-wrap: wrap; margin-bottom: 12px; }
+.log-controls .field { width: auto; }
+.ev { display: inline-flex; gap: 6px; align-items: center; }
+#log-results { margin-top: 24px; }
+#log-status { margin: 12px 0 0; padding: 0; }
+.filters #log-q { flex: 1 1 220px; min-width: 0; }
+@media (max-width: 600px) {
+  main { padding: 0 16px 32px; }
+  .app-header { padding-left: 16px; padding-right: 16px; }
+  .person .count { margin-left: 0; flex-basis: 100%; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+<header class="app-header">
+  <h1>Google Drive Manager</h1>
+  <span class="sync" id="sync" aria-live="polite"></span>
+</header>
+<main>
+  <div id="banner" class="banner" role="alert" hidden></div>
+
+  <div id="share-request" class="callout" hidden></div>
+
+  <div role="tablist" id="tabs" aria-label="Views" hidden>
+    <button role="tab" id="tab-people" aria-controls="panel-people" aria-selected="true">People and files</button>
+    <button role="tab" id="tab-log" aria-controls="panel-log" aria-selected="false" tabindex="-1">Access log</button>
+  </div>
+
+  <div role="tabpanel" id="panel-people" aria-labelledby="tab-people">
+  <section class="panel summary" aria-labelledby="scan-title">
+    <div class="scan-bar">
+      <h2 id="scan-title" class="lede" style="color: var(--ink)">Who has access to your files</h2>
+      <p class="lede">Scans your Google Drive, My Drive and every shared drive, and lists each other person with access and the files they can open. Scanning only reads names and sharing settings. Removing someone's access is a separate, confirmed step.</p>
+      <button type="button" class="btn primary" id="scan">Scan Drive</button>
+      <button type="button" class="btn quiet" id="stop" hidden>Stop</button>
+    </div>
+    <p class="status" id="progress" role="status" aria-live="polite" hidden></p>
+    <progress id="bar" hidden></progress>
+  </section>
+
+  <div id="signin" class="panel" hidden></div>
+
+  <section id="results" hidden>
+    <div class="filters top" role="group" aria-label="Which files">
+      <div class="seg">
+        <button type="button" class="btn" id="scope-mine" aria-pressed="true">Shared by me</button>
+        <button type="button" class="btn" id="scope-all" aria-pressed="false">Shared by me and with me</button>
+      </div>
+    </div>
+    <div id="removal" class="panel" role="status" aria-live="polite" hidden></div>
+    <div class="panel summary">
+      <dl class="facts" id="facts"></dl>
+      <ul class="caveats" id="caveats"></ul>
+    </div>
+    <div class="filters" role="search">
+      <input id="q" class="field" type="search" placeholder="Search people or files" aria-label="Search people or files" autocomplete="off">
+      <select id="role" class="field" aria-label="Filter by access level"><option value="">Any access level</option></select>
+    </div>
+    <div class="panel"><ul class="people" id="people"></ul></div>
+  </section>
+  </div>
+
+  <div role="tabpanel" id="panel-log" aria-labelledby="tab-log" hidden>
+    <section class="panel summary" aria-labelledby="log-title">
+      <div class="scan-bar">
+        <h2 id="log-title" class="lede" style="color: var(--ink)">Who opened your files</h2>
+        <p class="lede">From the Google Workspace audit log: every view, download and app read by someone other than you, grouped by person. It needs a Workspace administrator's audit-log credentials on the Google Workspace audit log connection.</p>
+      </div>
+      <div class="log-controls">
+        <select id="log-range" class="field" aria-label="Period">
+          <option value="30">Last 30 days</option>
+          <option value="90">Last 90 days</option>
+          <option value="180" selected>Last 6 months</option>
+        </select>
+        <span id="log-events">
+          <label class="ev"><input type="checkbox" value="view" checked> Viewed</label>
+          <label class="ev"><input type="checkbox" value="download" checked> Downloaded</label>
+          <label class="ev"><input type="checkbox" value="access_item_content" checked> Read by an app</label>
+        </span>
+      </div>
+      <button type="button" class="btn primary" id="log-load">Load access log</button>
+      <p class="status" id="log-status" role="status" aria-live="polite" hidden></p>
+    </section>
+    <section id="log-results" hidden>
+      <div class="panel summary">
+        <dl class="facts" id="log-facts"></dl>
+        <ul class="caveats" id="log-caveats"></ul>
+      </div>
+      <div class="filters" role="search">
+        <input id="log-q" class="field" type="search" placeholder="Search people, files or owners" aria-label="Search people, files or owners" autocomplete="off">
+      </div>
+      <div class="panel"><ul class="people" id="log-people"></ul></div>
+    </section>
+  </div>
+</main>
+</div>
+
+<script>
+"use strict";
+// Approved Requests this page calls (the REPLACE_ values are filled in when the recipe publishes it). The viewer's own session authorizes each call, and each
+// viewer signs in with their own Google account. "remove" and "grant" change sharing; the rest only read.
+const REQ = {
+  scan: "REPLACE_SCAN",
+  permissions: "REPLACE_PERMISSIONS",
+  who: "REPLACE_WHO",
+  drives: "REPLACE_DRIVES",
+  remove: "REPLACE_REMOVE",
+  grant: "REPLACE_GRANT",
+  fileInfo: "REPLACE_FILE_INFO",
+  driveInfo: "REPLACE_DRIVE_INFO",
+  audit: "", // set by the Access log recipe; empty hides the Access log tab
+};
+const PROJECT = (location.pathname.match(/\/projects\/([^/]+)\//) || [])[1];
+const MAX_PAGES = 250;          // 250 pages of 200 files
+const PERMISSION_WORKERS = 3;   // per-file reads in flight at once
+const REMOVE_WORKERS = 2;       // removals in flight at once
+const FILE_ROWS = 100;          // rows shown per person before "Show all"
+const FOLDER = "application/vnd.google-apps.folder";
+const MANAGER = new Set(["owner", "organizer", "fileOrganizer"]);
+
+const ROLES = {
+  owner: { label: "Owner", tone: "accent" },
+  organizer: { label: "Manager", tone: "accent" },
+  fileOrganizer: { label: "Content manager", tone: "accent" },
+  writer: { label: "Editor", tone: "accent" },
+  commenter: { label: "Commenter", tone: "info" },
+  reader: { label: "Viewer", tone: null },
+};
+const roleLabel = (r) => (ROLES[r] ? ROLES[r].label : r || "Unknown");
+
+const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+const $ = (id) => document.getElementById(id);
+const plural = (n, one, many) => `${n} ${n === 1 ? one : many || one + "s"}`;
+
+class Stopped extends Error {}
+class Uncertain extends Error {}
+
+// DOM helper: text only, never HTML, because every stored value is untrusted.
+function h(tag, props, ...children) {
+  const el = document.createElement(tag);
+  for (const [k, v] of Object.entries(props || {})) {
+    if (v === undefined || v === null || v === false) continue;
+    if (k === "class") el.className = v;
+    else if (k === "style") el.style.cssText = v;
+    else if (k.startsWith("on")) el.addEventListener(k.slice(2), v);
+    else el.setAttribute(k, v === true ? "" : v);
+  }
+  for (const c of children.flat()) {
+    if (c === undefined || c === null || c === false) continue;
+    el.append(c instanceof Node ? c : document.createTextNode(String(c)));
+  }
+  return el;
+}
+const chip = (text, tone) => h("span", { class: "chip", style: tone ? `--tone: var(--${tone})` : null }, text);
+
+function showBanner(text) {
+  const b = $("banner");
+  if (!text) { b.hidden = true; return; }
+  b.textContent = text;
+  b.hidden = false;
+}
+
+// A Google link is only opened when it points at Google over HTTPS.
+function googleHref(value) {
+  try {
+    const u = new URL(value);
+    return u.protocol === "https:" && /(^|\.)google\.com$/.test(u.hostname) ? u.href : null;
+  } catch (_) { return null; }
+}
+
+/* ---------- Requests ---------- */
+
+async function run(id, parameters, limit) {
+  for (let attempt = 0; ; attempt++) {
+    const res = await fetch(`/api/data/v1/projects/${PROJECT}/requests/${id}/execute`, {
+      method: "POST",
+      credentials: "same-origin",
+      headers: { Accept: "application/json", "Content-Type": "application/json" },
+      body: JSON.stringify(limit ? { parameters: parameters || {}, limit } : { parameters: parameters || {} }),
+    });
+    let body = null;
+    try { body = await res.json(); } catch (_) { /* an empty or non-JSON body is reported below */ }
+    if (res.status === 202 || (body && body.outcome === "indeterminate")) {
+      throw new Uncertain("Ekaya couldn't confirm whether that change applied. Scan again to see the current sharing before trying again.");
+    }
+    // 429 means Ekaya refused to start it, so waiting and sending it again is safe.
+    if (res.status === 429 && attempt < 6) { await sleep(700 * (attempt + 1)); continue; }
+    if (!res.ok) {
+      const detail = body && body.details && body.details.error_message;
+      const why = detail || (body && (body.message || body.error));
+      const err = new Error(why ? `${why} (HTTP ${res.status})` : `The request failed with HTTP ${res.status}.`);
+      err.status = res.status;
+      err.code = body && body.error;
+      err.queryId = body && body.query_id;
+      throw err;
+    }
+    if (!body) throw new Error("Ekaya returned an empty response.");
+    if (body.outcome && body.outcome !== "succeeded") throw new Error(`The request finished as "${body.outcome}".`);
+    if (body.mocked === true) throw new Error("The response contains mock data, not your Drive.");
+    // Only an outer stream_status of complete says a read arrived whole. A write's answer carries no
+    // stream_status; for a write, an HTTP success with outcome succeeded (checked above) is the answer.
+    const isWrite = id === REQ.grant || id === REQ.remove;
+    if (!isWrite && body.stream_status !== "complete") throw new Error("Ekaya returned an incomplete answer.");
+    return body;
+  }
+}
+
+async function readMe() {
+  const body = await run(REQ.who);
+  const user = (body.document && body.document.user) || {};
+  return { email: (user.emailAddress || "").toLowerCase(), permissionId: user.permissionId || "", name: user.displayName || "" };
+}
+
+async function readDrives() {
+  const names = new Map();
+  let token;
+  for (let page = 0; page < 20; page++) {
+    const body = await run(REQ.drives, token ? { pageToken: token } : {});
+    const doc = body.document || {};
+    for (const d of doc.drives || []) if (d.id) names.set(d.id, d.name || "Shared drive");
+    token = doc.nextPageToken;
+    if (!token) break;
+  }
+  return names;
+}
+
+async function readFilePermissions(fileId) {
+  const all = [];
+  let token;
+  for (let page = 0; page < 20; page++) {
+    const body = await run(REQ.permissions, token ? { fileId, pageToken: token } : { fileId });
+    const doc = body.document || {};
+    all.push(...(doc.permissions || []));
+    token = doc.nextPageToken;
+    if (!token) return all;
+  }
+  throw new Error("More permission pages than this app reads.");
+}
+
+/* ---------- Scan ---------- */
+
+let scanning = false;
+let stopRequested = false;
+let model = null;
+let scope = "mine"; // "mine": files you share; "all": also files shared with you
+
+function progress(text, done, total) {
+  const p = $("progress");
+  p.hidden = false;
+  p.textContent = text;
+  const bar = $("bar");
+  bar.hidden = false;
+  if (total) { bar.max = total; bar.value = done; } else { bar.removeAttribute("value"); }
+}
+function endProgress() {
+  $("progress").hidden = true;
+  $("bar").hidden = true;
+}
+
+async function scan() {
+  if (scanning || removing) return;
+  scanning = true;
+  stopRequested = false;
+  showBanner("");
+  setRemovalNote("");
+  $("signin").hidden = true;
+  $("scan").disabled = true;
+  $("stop").hidden = false;
+  $("stop").disabled = false;
+  try {
+    progress("Checking who is signed in…");
+    const me = await readMe();
+
+    progress("Reading your shared drives…");
+    let drives = new Map();
+    let drivesFailed = false;
+    try { drives = await readDrives(); } catch (err) {
+      if (err.status === 409) throw err;
+      drivesFailed = true;
+    }
+
+    // 1. List every file, with permissions where Drive returns them in bulk.
+    const byId = new Map();
+    let token;
+    let pages = 0;
+    let incompleteSearch = false;
+    do {
+      if (stopRequested) throw new Stopped();
+      const body = await run(REQ.scan, token ? { pageToken: token } : {});
+      const doc = body.document || {};
+      if (doc.incompleteSearch) incompleteSearch = true;
+      for (const f of doc.files || []) if (f.id && !byId.has(f.id)) byId.set(f.id, f);
+      token = doc.nextPageToken;
+      pages++;
+      progress(`Listing files… ${byId.size} found`);
+    } while (token && pages < MAX_PAGES);
+    const truncated = !!token;
+    const files = [...byId.values()];
+
+    // 2. Shared-drive files come back without permissions; read those one file at a time.
+    //    Files shared with you outside a shared drive stay unread: Drive only shows their
+    //    sharing to people who can manage them.
+    const need = files.filter((f) => f.mimeType !== FOLDER && f.driveId && !Array.isArray(f.permissions));
+    let next = 0;
+    let done = 0;
+    let failed = 0;
+    let firstFailure = "";
+    async function worker() {
+      while (next < need.length && !stopRequested) {
+        const f = need[next++];
+        try {
+          f.permissions = await readFilePermissions(f.id);
+        } catch (err) {
+          if (err.status === 409 && err.code === "user_sign_in_required") throw err;
+          failed++;
+          if (!firstFailure) firstFailure = err.message;
+        }
+        done++;
+        progress(`Reading who can open each file… ${done} of ${need.length}`, done, need.length);
+      }
+    }
+    if (need.length) {
+      progress(`Reading who can open each file… 0 of ${need.length}`, 0, need.length);
+      await Promise.all(Array.from({ length: Math.min(PERMISSION_WORKERS, need.length) }, worker));
+    }
+    if (stopRequested) throw new Stopped();
+
+    model = build(files, me, drives);
+    model.notes = { truncated, incompleteSearch, failed, firstFailure, drivesFailed };
+    model.scannedAt = new Date();
+    model.changed = false;
+    renderAll();
+  } catch (err) {
+    if (err instanceof Stopped) {
+      showBanner("Scan stopped. Nothing was kept; scan again to see the results.");
+    } else if (err.status === 409 && err.code === "user_sign_in_required" && err.queryId) {
+      signInPrompt(err.queryId);
+    } else {
+      showBanner(`Couldn't scan your Drive. ${err.message}`);
+    }
+  } finally {
+    scanning = false;
+    $("scan").disabled = false;
+    $("stop").hidden = true;
+    endProgress();
+  }
+}
+
+function isMe(p, me) {
+  return (me.email && (p.emailAddress || "").toLowerCase() === me.email) || (me.permissionId && p.id === me.permissionId);
+}
+
+function build(files, me, drives) {
+  const people = new Map();
+  const counts = { files: 0, folders: 0, foldersSkipped: 0, mine: 0, sharedDriveFiles: 0, linkShared: 0, unreadable: 0 };
+  for (const f of files) {
+    const isFolder = f.mimeType === FOLDER;
+    if (!isFolder) {
+      counts.files++;
+      if (f.driveId) counts.sharedDriveFiles++;
+    }
+    if (!Array.isArray(f.permissions)) {
+      if (isFolder) counts.foldersSkipped++; else counts.unreadable++;
+      continue;
+    }
+    if (isFolder) counts.folders++;
+    // A file is one you share when you own it or manage it in a shared drive.
+    const myPerm = f.permissions.find((p) => isMe(p, me));
+    const mine = f.ownedByMe === true || (!!myPerm && MANAGER.has(myPerm.role));
+    if (!isFolder && mine) counts.mine++;
+    const where = f.driveId ? (drives.get(f.driveId) || "Shared drive") : (f.ownedByMe ? "My Drive" : "Shared with you");
+    let byLink = false;
+    const seen = new Set();
+    for (const p of f.permissions) {
+      if (p.deleted) continue;
+      if (p.type === "anyone" || p.type === "domain") { byLink = true; continue; }
+      if (isMe(p, me)) continue;
+      const email = (p.emailAddress || "").toLowerCase();
+      const key = email || `id:${p.id}`;
+      if (seen.has(key)) continue;
+      seen.add(key);
+      let person = people.get(key);
+      if (!person) {
+        person = { key, email: p.emailAddress || "", name: p.displayName || p.emailAddress || "Unknown", type: p.type, files: [] };
+        people.set(key, person);
+      }
+      if (p.displayName && person.name === person.email) person.name = p.displayName;
+      // Drive only says whether access is inherited for shared-drive items.
+      const inherited = (p.permissionDetails || []).some((d) => d.inherited);
+      person.files.push({
+        file: f, folder: isFolder, where, role: p.role, permId: p.id, inherited, mine,
+        pending: !!p.pendingOwner,
+        removable: mine && !!p.id && p.role !== "owner" && !inherited && (p.type === "user" || p.type === "group"),
+      });
+    }
+    if (byLink && !isFolder) counts.linkShared++;
+  }
+  return { people, me, counts };
+}
+
+/* ---------- Results ---------- */
+
+const openKeys = new Set();
+const dateFmt = new Intl.DateTimeFormat(undefined, { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" });
+const inScope = (x) => scope === "all" || x.mine;
+const removableOf = (p) => p.files.filter((x) => x.removable);
+const countLabel = (list) => {
+  const folders = list.filter((x) => x.folder).length;
+  const files = list.length - folders;
+  return [files ? plural(files, "file") : null, folders ? plural(folders, "folder") : null].filter(Boolean).join(" and ") || "0 files";
+};
+
+function renderAll() {
+  const { counts, notes } = model;
+  $("results").hidden = false;
+  renderSync();
+
+  const caveats = [];
+  if (notes.truncated) caveats.push(`Stopped after ${MAX_PAGES * 200} files; your Drive has more. Results below are incomplete.`);
+  if (notes.incompleteSearch) caveats.push("Google reported the file search as incomplete, so some files may be missing.");
+  if (notes.failed) caveats.push(`${plural(notes.failed, "file")} couldn't be read and ${notes.failed === 1 ? "is" : "are"} left out. ${notes.firstFailure}`);
+  if (counts.unreadable) caveats.push(`${plural(counts.unreadable, "file")} came back without a sharing list, usually files shared with you that you can't manage. They are left out.`);
+  if (notes.drivesFailed) caveats.push("Shared drive names couldn't be read, so shared-drive files show as \"Shared drive\".");
+  if (counts.linkShared) caveats.push(`${plural(counts.linkShared, "file")} ${counts.linkShared === 1 ? "is" : "are"} also open to anyone with the link or to a whole domain. That isn't a person, so it isn't listed here.`);
+  if (counts.foldersSkipped) caveats.push(`${plural(counts.foldersSkipped, "shared-drive folder")} not read one by one; access given on a shared-drive folder shows on the files inside it.`);
+  caveats.push("Groups are listed as one entry and not expanded into their members. Access that comes from a shared drive's membership can't be removed here; change it on the shared drive.");
+  $("caveats").replaceChildren(...caveats.map((c) => h("li", {}, c)));
+
+  // Role filter: only the access levels that exist in this scan.
+  const present = new Set();
+  for (const p of model.people.values()) for (const f of p.files) present.add(f.role);
+  const select = $("role");
+  const current = select.value;
+  select.replaceChildren(h("option", { value: "" }, "Any access level"),
+    ...Object.keys(ROLES).filter((r) => present.has(r)).map((r) => h("option", { value: r }, ROLES[r].label)));
+  select.value = present.has(current) ? current : "";
+  renderPeople();
+}
+
+function renderSync() {
+  if (!model) return;
+  $("sync").replaceChildren(`Scanned ${dateFmt.format(model.scannedAt)}${model.changed ? " · changed since, scan again to refresh" : ""}`);
+}
+
+function renderFacts(rows) {
+  const { counts } = model;
+  const shares = rows.reduce((n, r) => n + r.files.length, 0);
+  $("facts").replaceChildren(
+    h("dt", {}, "Signed in as"), h("dd", {}, model.me.email || model.me.name || "Unknown"),
+    h("dt", {}, "Showing"), h("dd", {}, scope === "mine" ? "Files you share" : "Files you share and files shared with you"),
+    h("dt", {}, "People with access"), h("dd", {}, String(rows.length)),
+    h("dt", {}, "Shares listed"), h("dd", {}, String(shares)),
+    h("dt", {}, "Files scanned"), h("dd", {}, `${counts.files} (${counts.mine} you can manage, ${counts.sharedDriveFiles} in shared drives)`),
+  );
+}
+
+function renderPeople() {
+  if (!model) return;
+  const q = $("q").value.trim().toLowerCase();
+  const role = $("role").value;
+  const rows = [...model.people.values()].map((p) => {
+    const personHit = !q || p.name.toLowerCase().includes(q) || p.email.toLowerCase().includes(q);
+    const files = p.files.filter((x) => inScope(x) && (!role || x.role === role) && (personHit || (x.file.name || "").toLowerCase().includes(q)));
+    return { p, files };
+  }).filter((x) => x.files.length)
+    .sort((a, b) => b.files.length - a.files.length || a.p.name.localeCompare(b.p.name));
+  renderFacts(rows);
+
+  const list = $("people");
+  if (!rows.length) {
+    list.replaceChildren(h("li", { class: "empty-note" }, model.people.size
+      ? (scope === "mine" && !q && !role
+        ? "No one else has access to files you share. Choose “Shared by me and with me” to include files others shared with you."
+        : "Nobody matches that search.")
+      : "No one else has access to any of your files."));
+    return;
+  }
+  list.replaceChildren(...rows.map(({ p, files }) => personCard(p, files)));
+}
+
+function personCard(p, files) {
+  const body = h("div", { class: "files" });
+  const confirm = h("div", { class: "confirm", hidden: true });
+  const rem = removableOf(p);
+  const summary = h("summary", {},
+    h("span", { class: "who" }, p.name),
+    p.email && p.email !== p.name ? h("span", { class: "mail" }, p.email) : null,
+    p.type === "group" ? chip("group", "info") : null,
+    h("span", { class: "count" }, countLabel(files)));
+  const details = h("details", {}, summary, confirm, body);
+  if (rem.length) {
+    const button = h("button", { type: "button", class: "btn quiet danger", disabled: removing }, `Remove all access (${rem.length})`);
+    button.addEventListener("click", (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      details.open = true;
+      askRemoveAll(p, rem, confirm);
+    });
+    summary.append(button);
+  }
+  const fill = () => { if (!body.childNodes.length) body.append(fileTable(p, files, FILE_ROWS)); };
+  details.addEventListener("toggle", () => {
+    if (details.open) { openKeys.add(p.key); fill(); } else openKeys.delete(p.key);
+  });
+  if (openKeys.has(p.key)) { details.open = true; fill(); }
+  return h("li", { class: "person" }, details);
+}
+
+function fileTable(p, files, limit) {
+  const wrap = h("div");
+  const sorted = [...files].sort((a, b) => (a.file.name || "").localeCompare(b.file.name || ""));
+  const rows = sorted.slice(0, limit);
+  const table = h("table", {},
+    h("thead", {}, h("tr", {}, h("th", {}, "File"), h("th", {}, "Where"), h("th", {}, "Access"))),
+    h("tbody", {}, ...rows.map((x) => {
+      const href = googleHref(x.file.webViewLink || x.file.display_url);
+      const name = x.file.name || "Untitled";
+      const meta = [x.inherited ? "inherited, change it where it was set" : null, x.pending ? "pending owner" : null].filter(Boolean).join(", ");
+      const info = ROLES[x.role] || { label: roleLabel(x.role), tone: null };
+      return h("tr", {},
+        h("td", {}, href ? h("a", { href, target: "_blank", rel: "noopener noreferrer" }, name) : name, x.folder ? [" ", chip("folder")] : null),
+        h("td", { class: "meta" }, x.where),
+        h("td", {}, chip(info.label, info.tone), meta ? h("span", { class: "meta" }, ` ${meta}`) : null,
+          x.removable ? [" ", rowRemoveButton(p, x)] : null));
+    })));
+  wrap.append(table);
+  if (sorted.length > limit) {
+    const more = h("button", { type: "button", class: "btn quiet more" }, `Show all ${sorted.length} rows`);
+    more.addEventListener("click", () => wrap.replaceChildren(fileTable(p, files, Infinity)));
+    wrap.append(more);
+  }
+  return wrap;
+}
+
+/* ---------- Removing access ---------- */
+
+let removing = false;
+let stopRemoval = false;
+
+function setRemovalNote(text, isError, ...extra) {
+  const box = $("removal");
+  box.classList.toggle("err", !!isError);
+  box.setAttribute("role", isError ? "alert" : "status");
+  if (!text) { box.hidden = true; box.replaceChildren(); return; }
+  box.replaceChildren(h("p", {}, text), ...extra);
+  box.hidden = false;
+}
+
+// One removal. Returns "removed", "gone" (already not there) or "inherited" (set on a parent).
+async function removeOne(x) {
+  try {
+    await run(REQ.remove, { file_id: x.file.id, permission_id: x.permId });
+    return "removed";
+  } catch (err) {
+    if (err instanceof Uncertain) throw err;
+    if (/not ?found/i.test(err.message)) return "gone";
+    if (/inherit/i.test(err.message)) return "inherited";
+    throw err;
+  }
+}
+
+function dropItem(p, x) {
+  p.files = p.files.filter((y) => y !== x);
+  x.file.permissions = (x.file.permissions || []).filter((q) => q.id !== x.permId);
+  if (!p.files.length) model.people.delete(p.key);
+  model.changed = true;
+}
+
+function rowRemoveButton(p, x) {
+  const button = h("button", { type: "button", class: "btn quiet danger", disabled: removing }, "Remove access");
+  button.addEventListener("click", async () => {
+    if (!button.dataset.armed) {
+      button.dataset.armed = "1";
+      button.textContent = `Confirm: remove ${p.name}`;
+      setTimeout(() => { if (button.isConnected && !removing) { delete button.dataset.armed; button.textContent = "Remove access"; } }, 5000);
+      return;
+    }
+    if (removing) return;
+    removing = true;
+    button.disabled = true;
+    button.textContent = "Removing…";
+    const name = x.file.name || "this file";
+    try {
+      const outcome = await removeOne(x);
+      if (outcome === "inherited") {
+        // Set on a parent folder or shared drive: nothing changed here, and no button next time.
+        x.removable = false;
+        x.inherited = true;
+        setRemovalNote(`${p.name}'s access to “${name}” comes from a parent folder or shared drive. Remove it there.`, true);
+      } else {
+        dropItem(p, x);
+        setRemovalNote(`Removed ${p.name} from “${name}”.${x.folder ? " Files inside the folder that inherited this access may still show until you scan again." : ""}`);
+      }
+    } catch (err) {
+      if (err.status === 409 && err.code === "user_sign_in_required" && err.queryId) signInPrompt(err.queryId);
+      else setRemovalNote(`Couldn't remove ${p.name} from “${name}”. ${err.message}`, true);
+    } finally {
+      removing = false;
+      renderSync();
+      renderPeople();
+    }
+  });
+  return button;
+}
+
+function askRemoveAll(p, rem, box) {
+  const folders = rem.filter((x) => x.folder).length;
+  const go = h("button", { type: "button", class: "btn danger" }, `Remove ${p.name}'s access`);
+  const cancel = h("button", { type: "button", class: "btn quiet" }, "Cancel");
+  cancel.addEventListener("click", () => { box.hidden = true; box.replaceChildren(); });
+  go.addEventListener("click", () => removeAll(p, rem));
+  box.replaceChildren(...[
+    h("p", {}, h("strong", {}, `Remove ${p.name} from ${countLabel(rem)}?`)),
+    h("p", { class: "meta" }, "They lose the access you gave them on each one. Access they hold another way, such as through a shared drive's membership or a folder you don't manage, stays. Google doesn't notify them. To undo, ask Claude to share the files with them again."),
+    folders ? h("p", { class: "meta" }, "Folders go first, so anything inside them that inherited their access goes with them.") : null,
+    h("div", { class: "scan-bar" }, go, cancel)].filter(Boolean));
+  box.hidden = false;
+  go.focus();
+}
+
+async function pool(list, n, fn) {
+  let i = 0;
+  await Promise.all(Array.from({ length: Math.min(n, list.length) }, async () => {
+    while (i < list.length && !stopRemoval) await fn(list[i++]);
+  }));
+}
+
+async function removeAll(p, rem) {
+  if (removing) return;
+  removing = true;
+  stopRemoval = false;
+  renderPeople();
+  const stats = { removed: 0, gone: 0, inherited: 0, failed: 0, first: "" };
+  let signIn = null;
+  let uncertain = null;
+  let done = 0;
+  const stop = h("button", { type: "button", class: "btn quiet" }, "Stop");
+  stop.addEventListener("click", () => { stopRemoval = true; stop.disabled = true; });
+  const tick = () => setRemovalNote(`Removing ${p.name}… ${done} of ${rem.length}`, false, stop);
+  tick();
+  async function one(x) {
+    try {
+      const outcome = await removeOne(x);
+      stats[outcome]++;
+      if (outcome !== "inherited") dropItem(p, x);
+    } catch (err) {
+      if (err instanceof Uncertain) { uncertain = err; stopRemoval = true; }
+      else if (err.status === 409 && err.code === "user_sign_in_required" && err.queryId) { signIn = err.queryId; stopRemoval = true; }
+      else { stats.failed++; if (!stats.first) stats.first = err.message; }
+    }
+    done++;
+    tick();
+  }
+  // Folders first: removing a folder's share also clears what its files inherited.
+  await pool(rem.filter((x) => x.folder), REMOVE_WORKERS, one);
+  await pool(rem.filter((x) => !x.folder), REMOVE_WORKERS, one);
+  removing = false;
+
+  const parts = [];
+  const gone = stats.removed + stats.gone;
+  parts.push(`Removed ${p.name} from ${plural(gone, "item")}.`);
+  if (stats.inherited) parts.push(`${plural(stats.inherited, "item")} ${stats.inherited === 1 ? "gets" : "get"} their access from a parent, so ${stats.inherited === 1 ? "it was" : "they were"} left as is.`);
+  if (stats.failed) parts.push(`${plural(stats.failed, "removal")} failed. ${stats.first}`);
+  if (stopRemoval && !uncertain && !signIn) parts.push(`Stopped after ${done} of ${rem.length}.`);
+  if (uncertain) parts.push(uncertain.message);
+  setRemovalNote(parts.join(" "), !!(stats.failed || uncertain));
+  if (signIn) signInPrompt(signIn);
+  renderSync();
+  renderPeople();
+}
+
+/* ---------- Google sign-in ---------- */
+
+function signInPrompt(queryId, what, retry) {
+  const box = $("signin");
+  const notice = h("p", { role: "status" }, what || "Sign in with your own Google account so Ekaya can use your Drive, then try again.");
+  const rescan = h("button", { type: "button", class: "btn quiet", onclick: retry || scan }, retry ? "Try again" : "Scan again");
+  const getLink = h("button", { type: "button", class: "btn" }, "Get sign-in link");
+  const actions = h("div", { class: "scan-bar" }, getLink, rescan);
+  getLink.addEventListener("click", async () => {
+    getLink.disabled = true;
+    notice.setAttribute("role", "status");
+    notice.textContent = "Getting your sign-in link…";
+    try {
+      const res = await fetch(`/api/projects/${PROJECT}/requests/${queryId}/user-sign-in`, {
+        method: "POST",
+        credentials: "same-origin",
+        headers: { Accept: "application/json" },
+      });
+      let body = null;
+      try { body = await res.json(); } catch (_) { /* reported below */ }
+      if (!res.ok) {
+        const why = body && (body.message || body.error);
+        throw new Error(why ? `${why} (HTTP ${res.status})` : `The request failed with HTTP ${res.status}.`);
+      }
+      const link = body && body.data && body.data.human_link;
+      if (typeof link !== "string" || new URL(link).protocol !== "https:") throw new Error("The response did not include a valid sign-in link.");
+      const signIn = h("a", { href: link, target: "_blank", rel: "noopener noreferrer", class: "btn" }, what ? "Open the credential page (opens a new tab)" : "Sign in to Google Drive (opens a new tab)");
+      actions.replaceChildren(signIn, rescan);
+      notice.textContent = "Open the link, then try again after signing in.";
+      signIn.focus();
+    } catch (err) {
+      notice.setAttribute("role", "alert");
+      notice.textContent = `Couldn't get a sign-in link. ${err.message}`;
+    } finally {
+      getLink.disabled = false;
+    }
+  });
+  box.replaceChildren(notice, actions);
+  box.hidden = false;
+}
+
+/* ---------- Wiring ---------- */
+
+function setScope(next) {
+  scope = next;
+  $("scope-mine").setAttribute("aria-pressed", String(next === "mine"));
+  $("scope-all").setAttribute("aria-pressed", String(next === "all"));
+  renderPeople();
+}
+$("scan").addEventListener("click", scan);
+$("stop").addEventListener("click", () => { stopRequested = true; $("stop").disabled = true; });
+$("scope-mine").addEventListener("click", () => setScope("mine"));
+$("scope-all").addEventListener("click", () => setScope("all"));
+$("q").addEventListener("input", renderPeople);
+$("role").addEventListener("change", renderPeople);
+if (!PROJECT) showBanner("Open this app from its Ekaya address (/projects/…/apps/google-drive-manager/).");
+
+// The Access log tab belongs to the second recipe: it appears once its Request id is set above and
+// access-log.js is published beside this page.
+if (/^[0-9a-f-]{36}$/i.test(REQ.audit)) {
+  $("tabs").hidden = false;
+  document.body.append(h("script", { src: "access-log.js" }));
+}
+</script>
+<script src="share.js"></script>
+</body>
+</html>

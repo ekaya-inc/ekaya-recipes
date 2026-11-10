@@ -1,0 +1,365 @@
+{
+  "slug": "google-drive-manager-permissions",
+  "video": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "lead": 0.5,
+    "tail": 0.7,
+    "crossfade": 0.35,
+    "title_seconds": 3.0,
+    "end_seconds": 3.0
+  },
+  "voice": {
+    "provider": "elevenlabs",
+    "voice_name": "Justin Time - Elearning Narration",
+    "voice_id": "uFIXVu9mmnDZ7dTKCBTX",
+    "model_id": "eleven_multilingual_v2",
+    "seed": 42,
+    "voice_settings": {
+      "stability": 0.6,
+      "similarity_boost": 0.75,
+      "style": 0,
+      "use_speaker_boost": true
+    }
+  },
+  "pronounce": {
+    "JSON": "Jason"
+  },
+  "title_card": {
+    "kicker": "Ekaya Recipes",
+    "title": "Google Drive Manager (1 of 2)",
+    "subtitle": "See who can open your files, and give or remove access"
+  },
+  "end_card": {
+    "kicker": "Ekaya Recipes",
+    "title": "Next: the Access log",
+    "subtitle": "Part 2 shows who opened your files"
+  },
+  "scenes": [
+    {
+      "id": "s01-intro",
+      "narration": "In this Recipe, you'll build a Google Drive Manager in your Ekaya project. It shows who can open your files. And it lets you give or take away that access, but only after you confirm.",
+      "shots": [
+        {
+          "image": "000--scan-results.png",
+          "focus": [
+            0,
+            0,
+            1280,
+            720
+          ],
+          "zoom": 1.0
+        },
+        {
+          "at": "It shows who can open your files",
+          "image": "000--scan-results.png",
+          "focus": [
+            205,
+            330,
+            870,
+            390
+          ],
+          "frame": [
+            205,
+            330,
+            870,
+            390
+          ],
+          "zoom": 1.24,
+          "highlight": true
+        }
+      ]
+    },
+    {
+      "id": "s02-start",
+      "narration": "Paste this Recipe's prompt into your agent. It adds Google Drive to your project, and gives you a link. Open the link, and sign in with Google. It's one click, and there are no keys to copy.",
+      "shots": [
+        {
+          "image": "010--prompt.png",
+          "focus": [
+            0,
+            0,
+            1280,
+            720
+          ],
+          "frame": [
+            96,
+            110,
+            1088,
+            500
+          ],
+          "zoom": 1.0
+        },
+        {
+          "image": "020--sign-in.png",
+          "focus": [
+            0,
+            0,
+            1280,
+            720
+          ],
+          "frame": [
+            96,
+            110,
+            1088,
+            500
+          ],
+          "zoom": 1.12,
+          "at": "Open the link"
+        }
+      ]
+    },
+    {
+      "id": "s03-setup",
+      "narration": "Your agent does the rest. It sets up read-only access to your Drive, and two Requests that can change sharing, which your prompt already allowed. Then it publishes the app, and gives you its link.",
+      "shots": [
+        {
+          "image": "030--setup.png",
+          "focus": [
+            0,
+            0,
+            1280,
+            720
+          ],
+          "frame": [
+            96,
+            110,
+            1088,
+            500
+          ],
+          "zoom": 1.12
+        }
+      ]
+    },
+    {
+      "id": "s04-scan",
+      "narration": "Open the app, and click Scan Drive. It lists each person who can open your files, and the files they can open, with their access level. Files in shared drives are read one at a time, so a big drive takes a little longer.",
+      "shots": [
+        {
+          "image": "000--scan-results.png",
+          "focus": [
+            204,
+            24,
+            872,
+            255
+          ],
+          "frame": [
+            204,
+            24,
+            872,
+            255
+          ],
+          "zoom": 1.24
+        },
+        {
+          "at": "It lists each person",
+          "image": "000--scan-results.png",
+          "focus": [
+            205,
+            330,
+            870,
+            390
+          ],
+          "frame": [
+            205,
+            330,
+            870,
+            390
+          ],
+          "zoom": 1.24,
+          "highlight": true
+        }
+      ]
+    },
+    {
+      "id": "s05-ask",
+      "narration": "To share a file, just ask your agent in plain words. For example, share the Partner Overview with a new vendor, as a viewer. Your agent finds the exact file, and opens the app on a confirm card.",
+      "shots": [
+        {
+          "image": "040--share-request.png",
+          "focus": [
+            0,
+            0,
+            1280,
+            720
+          ],
+          "zoom": 1.0
+        },
+        {
+          "at": "opens the app on a confirm card",
+          "image": "040--share-request.png",
+          "focus": [
+            204,
+            66,
+            872,
+            256
+          ],
+          "frame": [
+            204,
+            66,
+            872,
+            256
+          ],
+          "zoom": 1.24,
+          "highlight": true
+        }
+      ]
+    },
+    {
+      "id": "s06-confirm",
+      "narration": "The card shows who will get access, the file, with a link so you can check it, and the level. Nothing is shared until you click Confirm. Click Decline, and nothing changes.",
+      "shots": [
+        {
+          "image": "040--share-request.png",
+          "focus": [
+            204,
+            66,
+            872,
+            256
+          ],
+          "frame": [
+            204,
+            66,
+            872,
+            256
+          ],
+          "zoom": 1.35
+        },
+        {
+          "at": "Nothing is shared until you click Confirm",
+          "image": "040--share-request.png",
+          "focus": [
+            222,
+            232,
+            195,
+            38
+          ],
+          "frame": [
+            204,
+            66,
+            872,
+            256
+          ],
+          "zoom": 1.35,
+          "highlight": true
+        },
+        {
+          "at": "Click Decline",
+          "image": "040--share-request.png",
+          "focus": [
+            425,
+            232,
+            84,
+            38
+          ],
+          "frame": [
+            204,
+            66,
+            872,
+            256
+          ],
+          "zoom": 1.35,
+          "highlight": true
+        }
+      ]
+    },
+    {
+      "id": "s07-done",
+      "narration": "After you confirm, the app makes the change, and tells you what happened. Your agent only prepares the card. The change itself is made by the app.",
+      "shots": [
+        {
+          "image": "050--share-done.png",
+          "focus": [
+            204,
+            66,
+            872,
+            270
+          ],
+          "frame": [
+            204,
+            66,
+            872,
+            270
+          ],
+          "zoom": 1.35
+        },
+        {
+          "at": "tells you what happened",
+          "image": "050--share-done.png",
+          "focus": [
+            222,
+            180,
+            836,
+            24
+          ],
+          "frame": [
+            204,
+            66,
+            872,
+            270
+          ],
+          "zoom": 1.35,
+          "highlight": true
+        }
+      ]
+    },
+    {
+      "id": "s08-remove",
+      "narration": "Removing access works the same way. Use the buttons in the app, or ask your agent. Either way, you confirm first. Access that comes from a parent folder, or from a shared drive's membership, has to be changed where it was set.",
+      "shots": [
+        {
+          "image": "060--person-remove.png",
+          "focus": [
+            205,
+            212,
+            870,
+            145
+          ],
+          "frame": [
+            205,
+            212,
+            870,
+            145
+          ],
+          "zoom": 1.24,
+          "highlight": true
+        },
+        {
+          "at": "or ask your agent",
+          "image": "070--remove-request.png",
+          "focus": [
+            204,
+            66,
+            872,
+            326
+          ],
+          "frame": [
+            204,
+            66,
+            872,
+            326
+          ],
+          "zoom": 1.24,
+          "highlight": true
+        }
+      ]
+    },
+    {
+      "id": "s09-outro",
+      "narration": "That's part one. In part two, you'll add an access log, so you can see who opened your files.",
+      "shots": [
+        {
+          "image": "000--scan-results.png",
+          "focus": [
+            0,
+            0,
+            1280,
+            720
+          ],
+          "zoom": 1.0
+        }
+      ]
+    }
+  ]
+}

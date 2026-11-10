@@ -1,0 +1,43 @@
+{
+  "backend_kind": "python_module",
+  "module": "google_drive_audit",
+  "runtime": "python3.12-2027.01",
+  "egress": ["oauth2.googleapis.com", "admin.googleapis.com"],
+  "credentials": [
+    {"name": "GOOGLE_CLIENT_ID", "label": "Google OAuth client ID", "secret": true, "required": true, "help": "From the sign-in script's output file (field client_id)."},
+    {"name": "GOOGLE_CLIENT_SECRET", "label": "Google OAuth client secret", "secret": true, "required": true, "help": "From the same file (field client_secret)."},
+    {"name": "GOOGLE_REFRESH_TOKEN", "label": "Google refresh token", "secret": true, "required": true, "help": "From the same file (field refresh_token), obtained by signing in as a Google Workspace administrator."},
+    {"name": "GOOGLE_QUOTA_PROJECT", "label": "Google Cloud project for API quota", "secret": false, "required": true, "help": "The Google Cloud project the Admin SDK API is enabled on."}
+  ],
+  "operations": [
+    {
+      "name": "drive_access_events",
+      "description": "Who accessed which Google Drive files and when, from the Google Workspace audit log. One row per event. By default it returns views, previews, downloads and apps reading file content on a person's behalf, for the last 30 days. Filter by time range, event names (comma separated), the person who acted, a file id, or a file owner (an email, or a shared drive name). exclude_actor leaves one person's own activity out. Fails rather than return a partial list if the range holds more events than one run can read; narrow the dates. The audit log lags real activity by a few minutes or more.",
+      "effect": "read",
+      "entity": "google.drive_access_events",
+      "result": "rows",
+      "timeout_s": 60,
+      "params": [
+        {"name": "start_time", "type": "string", "required": false},
+        {"name": "end_time", "type": "string", "required": false},
+        {"name": "events", "type": "string", "required": false},
+        {"name": "actor_email", "type": "string", "required": false},
+        {"name": "exclude_actor", "type": "string", "required": false},
+        {"name": "doc_id", "type": "string", "required": false},
+        {"name": "owner", "type": "string", "required": false}
+      ],
+      "output": [
+        {"name": "time", "type": "timestamptz", "description": "When the event happened."},
+        {"name": "actor_email", "type": "string", "description": "The person who acted; empty for a system or unknown actor."},
+        {"name": "actor_kind", "type": "string", "description": "person, or the kind of non-person actor such as system."},
+        {"name": "app_name", "type": "string", "description": "The application that acted on the person's behalf, if any."},
+        {"name": "event", "type": "string", "description": "The audit event name, such as view, download or access_item_content."},
+        {"name": "doc_id", "type": "string", "description": "The Drive file id."},
+        {"name": "doc_title", "type": "string", "description": "The file name."},
+        {"name": "doc_type", "type": "string", "description": "The kind of item, such as document, spreadsheet or pdf."},
+        {"name": "owner", "type": "string", "description": "The file's owner: a person's email or a shared drive name."},
+        {"name": "visibility", "type": "string", "description": "The file's sharing level when the event happened, such as private, shared_internally, shared_externally or people_with_link."}
+      ]
+    }
+  ]
+}

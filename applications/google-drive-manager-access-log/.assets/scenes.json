@@ -1,0 +1,311 @@
+{
+  "slug": "google-drive-manager-access-log",
+  "video": {
+    "width": 1920,
+    "height": 1080,
+    "fps": 30,
+    "lead": 0.5,
+    "tail": 0.7,
+    "crossfade": 0.35,
+    "title_seconds": 3.0,
+    "end_seconds": 3.0
+  },
+  "voice": {
+    "provider": "elevenlabs",
+    "voice_name": "Justin Time - Elearning Narration",
+    "voice_id": "uFIXVu9mmnDZ7dTKCBTX",
+    "model_id": "eleven_multilingual_v2",
+    "seed": 42,
+    "voice_settings": {
+      "stability": 0.6,
+      "similarity_boost": 0.75,
+      "style": 0,
+      "use_speaker_boost": true
+    }
+  },
+  "pronounce": {
+    "JSON": "Jason"
+  },
+  "title_card": {
+    "kicker": "Ekaya Recipes",
+    "title": "Google Drive Manager (2 of 2)",
+    "subtitle": "See who opened your files, and when"
+  },
+  "end_card": {
+    "kicker": "Ekaya Recipes",
+    "title": "Know who opened your files",
+    "subtitle": "From your Google Workspace audit log"
+  },
+  "scenes": [
+    {
+      "id": "s01-intro",
+      "narration": "In part two, you'll add an Access log to your Google Drive Manager. It shows who other than you opened which files, and when.",
+      "shots": [
+        {
+          "image": "000--log-person.png",
+          "focus": [
+            0,
+            0,
+            1280,
+            720
+          ],
+          "zoom": 1.0
+        },
+        {
+          "at": "who other than you opened which files",
+          "image": "000--log-person.png",
+          "focus": [
+            205,
+            314,
+            870,
+            263
+          ],
+          "frame": [
+            205,
+            314,
+            870,
+            263
+          ],
+          "zoom": 1.24,
+          "highlight": true
+        }
+      ]
+    },
+    {
+      "id": "s02-needs",
+      "narration": "This needs a Google Workspace administrator, because Google keeps the audit log for administrators only. You also need a Google Cloud project in your organization, and Python on your computer.",
+      "shots": [
+        {
+          "image": "010--needs.png",
+          "focus": [
+            0,
+            0,
+            1280,
+            720
+          ],
+          "frame": [
+            96,
+            110,
+            1088,
+            500
+          ],
+          "zoom": 1.12
+        }
+      ]
+    },
+    {
+      "id": "s03-cloud",
+      "narration": "First, prepare Google Cloud. Turn on the Admin SDK API. Set your consent screen's audience to Internal. Then create a Desktop app client, and download its JSON file. Keep that file private.",
+      "shots": [
+        {
+          "image": "020--cloud.png",
+          "focus": [
+            0,
+            0,
+            1280,
+            720
+          ],
+          "frame": [
+            96,
+            110,
+            1088,
+            500
+          ],
+          "zoom": 1.12
+        }
+      ]
+    },
+    {
+      "id": "s04-prompt",
+      "narration": "Now paste this Recipe's prompt into your agent. It creates a connection, and runs a small sign-in script on your computer. Your browser opens. Sign in as the administrator, and approve read-only access to the audit log.",
+      "shots": [
+        {
+          "image": "030--prompt.png",
+          "focus": [
+            0,
+            0,
+            1280,
+            720
+          ],
+          "frame": [
+            96,
+            110,
+            1088,
+            500
+          ],
+          "zoom": 1.0
+        },
+        {
+          "image": "040--script.png",
+          "focus": [
+            0,
+            0,
+            1280,
+            720
+          ],
+          "frame": [
+            96,
+            110,
+            1088,
+            500
+          ],
+          "zoom": 1.12,
+          "at": "Your browser opens"
+        }
+      ]
+    },
+    {
+      "id": "s05-values",
+      "narration": "Then copy four values into the credential page: the client ID, the client secret, the refresh token, and the project ID. Never put them in the conversation. On a Mac, your agent gives you a command for each, that copies the value without showing it.",
+      "shots": [
+        {
+          "image": "050--values.png",
+          "focus": [
+            0,
+            0,
+            1280,
+            720
+          ],
+          "frame": [
+            96,
+            110,
+            1088,
+            500
+          ],
+          "zoom": 1.12
+        }
+      ]
+    },
+    {
+      "id": "s06-publish",
+      "narration": "Your agent publishes the connector, tests it on your real log, and turns on the tab.",
+      "shots": [
+        {
+          "image": "060--publish.png",
+          "focus": [
+            0,
+            0,
+            1280,
+            720
+          ],
+          "frame": [
+            96,
+            110,
+            1088,
+            500
+          ],
+          "zoom": 1.12
+        }
+      ]
+    },
+    {
+      "id": "s07-log",
+      "narration": "Open the app, choose Access log, and click Load access log. You see each person who opened your files, and what they did: viewed, downloaded, or read by an app. People outside your domain are flagged.",
+      "shots": [
+        {
+          "image": "070--log-loaded.png",
+          "focus": [
+            0,
+            0,
+            1280,
+            720
+          ],
+          "zoom": 1.0
+        },
+        {
+          "at": "People outside your domain are flagged",
+          "image": "070--log-loaded.png",
+          "focus": [
+            205,
+            314,
+            870,
+            48
+          ],
+          "frame": [
+            205,
+            314,
+            870,
+            48
+          ],
+          "zoom": 1.24,
+          "highlight": true
+        }
+      ]
+    },
+    {
+      "id": "s08-detail",
+      "narration": "Open a person to see their files, who owns them, how they are shared, and when. Files shared with anyone who has the link are flagged. And accesses with no name appear as Not identified.",
+      "shots": [
+        {
+          "image": "080--log-two-open.png",
+          "focus": [
+            205,
+            122,
+            870,
+            160
+          ],
+          "frame": [
+            205,
+            24,
+            870,
+            436
+          ],
+          "zoom": 1.3,
+          "highlight": true
+        },
+        {
+          "at": "Files shared with anyone who has the link",
+          "image": "080--log-two-open.png",
+          "focus": [
+            205,
+            331,
+            870,
+            128
+          ],
+          "frame": [
+            205,
+            24,
+            870,
+            436
+          ],
+          "zoom": 1.3,
+          "highlight": true
+        },
+        {
+          "at": "Not identified",
+          "image": "080--log-two-open.png",
+          "focus": [
+            205,
+            331,
+            870,
+            48
+          ],
+          "frame": [
+            205,
+            24,
+            870,
+            436
+          ],
+          "zoom": 1.3,
+          "highlight": true
+        }
+      ]
+    },
+    {
+      "id": "s09-lag",
+      "narration": "Google's log shows an event a few minutes after it happens, so don't expect it to be instant. That's the Access log.",
+      "shots": [
+        {
+          "image": "070--log-loaded.png",
+          "focus": [
+            0,
+            0,
+            1280,
+            720
+          ],
+          "zoom": 1.0
+        }
+      ]
+    }
+  ]
+}
